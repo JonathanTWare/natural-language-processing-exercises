@@ -18,12 +18,21 @@ def scrape_inshorts_articles(urls):
         for card in article_cards:
             headline = card.find('span', itemprop='headline').text
             summary = card.find('div', itemprop='articleBody').text
+            author = card.find('span', class_ = 'author').text
+            date = card.find('span', itemprop = 'datePublished').text
+            day = card.find('span', clas='date').text
+            
             category = url.split('/')[-1]
+            
             
             articles.append({
                 'headline': headline,
                 'summary': summary,
+                'author': author,
+                'time': date,
+                'day': day,
                 'category': category
+                
             })
 
     df = pd.DataFrame(articles)
