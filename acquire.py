@@ -3,6 +3,38 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+def scrape_and_save_articles(urls, csv_filename):
+   
+    if os.path.exists(csv_filename):
+        df = pd.read_csv(csv_filename)
+    else:
+        df = pd.DataFrame(columns=['title', 'content'])
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+    for url in urls:
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        title = soup.find('h1').text.strip()
+        content = ' '.join([p.text.strip() for p in soup.find_all('p')])
+        
+        article = {
+            'title': title,
+            'content': content
+        }
+        
+        
+        df = df.append(article, ignore_index=True)
+    df.to_csv(csv_filename, index=False)
+    print(f"Articles saved to '{csv_filename}'")
+    
+    return df
+
+
+
 
 CSV_FILENAME = "inshorts_articles.csv"
 
